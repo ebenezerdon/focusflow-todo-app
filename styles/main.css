@@ -1,0 +1,42 @@
+/* styles/main.css - plain CSS for FocusFlow app */
+
+:root{
+  --accent: #0f766e; /* teal */
+  --muted: #94a3b8; /* slate muted */
+  --card: #ffffff;
+}
+
+html,body,#board{height:100%;}
+
+/* Buttons should not break text on small screens */
+.btn-primary, .btn-ghost, .btn-muted{white-space:nowrap}
+
+/* Board and column layout adjustments */
+#board{min-height:60vh}
+.column-drop{min-height:180px}
+
+/* Card focus and drag states */
+.task-card{transition:transform .12s ease, box-shadow .12s ease;}
+.task-card:focus{outline:2px solid rgba(15,118,110,0.15); transform:translateY(-2px);}
+.task-card.dragging{opacity:0.6; transform:scale(0.99); box-shadow:0 8px 20px rgba(2,6,23,0.08);}
+.column-drop.drag-over{background:linear-gradient(180deg, rgba(15,118,110,0.02), transparent); border-radius:10px}
+
+/* Priority pills */
+.priority-pill[data-priority="low"]{background:#ecfdf5;color:#065f46}
+.priority-pill[data-priority="medium"]{background:#fffbeb;color:#92400e}
+.priority-pill[data-priority="high"]{background:#fff1f2;color:#9f1239}
+
+/* Modal visible state */
+#task-modal{display:flex}
+#task-modal[aria-hidden="true"]{display:none}
+
+/* Small touch target increases */
+button, input, select, textarea{touch-action:manipulation}
+
+/* Accessibility helpers */
+.visually-hidden{position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap}
+
+/* Diagonal hero handling fallback */
+@media (max-width:640px){
+  .transform{-webkit-transform:none!important;transform:none!important}
+}
