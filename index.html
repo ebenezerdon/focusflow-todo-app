@@ -59,14 +59,14 @@
               <div class="relative max-w-md mx-auto">
                 <div class="rounded-xl bg-white/80 p-4 shadow-xl" style="transform: rotate(-6deg);">
                   <h3 class="text-sm font-semibold text-slate-800">Today</h3>
-                  <ul class="mt-3 space-y-2">
+                  <ul id="demo-today-list" class="mt-3 space-y-2">
                     <li class="card"><div class="text-sm font-medium">Finish project brief</div><div class="text-xs text-slate-500">Due later</div></li>
                     <li class="card"><div class="text-sm font-medium">Team sync</div><div class="text-xs text-slate-500">11:00 am</div></li>
                   </ul>
                 </div>
                 <div class="rounded-xl bg-white/90 p-4 shadow-lg absolute right-[-12%] top-12" style="width:82%; transform: rotate(4deg);">
                   <h3 class="text-sm font-semibold text-slate-800">In progress</h3>
-                  <ul class="mt-3 space-y-2">
+                  <ul id="demo-inprogress-list" class="mt-3 space-y-2">
                     <li class="card"><div class="text-sm font-medium">Design hero section</div><div class="text-xs text-slate-500">High priority</div></li>
                   </ul>
                 </div>
@@ -137,5 +137,43 @@
   <script src="scripts/helpers.js"></script>
   <script src="scripts/ui.js"></script>
   <script src="scripts/main.js"></script>
+  <script>
+    // Wire the landing page demo cards to real data from the app's storage.
+    // Wait for AppStorage to be available, then render tasks for the demo lists.
+    $(function(){
+      function escapeHtml(s){ return $('<div>').text(s||'').html(); }
+      function renderHomepageDemo(){
+        if(!window.AppStorage || typeof window.AppStorage.load !== 'function'){
+          // try again shortly if helpers not loaded yet
+          setTimeout(renderHomepageDemo, 50);
+          return;
+        }
+        try{
+          var board = window.AppStorage.load();
+          function populate(listId, colId){
+            var $list = $('#' + listId);
+            if(!$list.length) return;
+            $list.empty();
+            var tasks = (board.tasks || []).filter(function(t){ return t.column === colId; });
+            if(!tasks.length){
+              $list.append('<li class="card"><div class="text-sm font-medium">No tasks</div><div class="text-xs text-slate-500">Open the app to add tasks</div></li>');
+              return;
+            }
+            tasks.slice(0,5).forEach(function(t){
+              var title = '<div class="text-sm font-medium">' + escapeHtml(t.title || 'Untitled') + '</div>';
+              var notes = t.notes ? '<div class="text-xs text-slate-500">' + escapeHtml(t.notes) + '</div>' : '';
+              $list.append('<li class="card">' + title + notes + '</li>');
+            });
+          }
+          populate('demo-today-list', 'todo');
+          populate('demo-inprogress-list', 'inprogress');
+        }catch(err){
+          // don't break the landing page if something goes wrong
+          console.error('Failed to render homepage demo', err);
+        }
+      }
+      renderHomepageDemo();
+    });
+  </script>
 </body>
 </html>
